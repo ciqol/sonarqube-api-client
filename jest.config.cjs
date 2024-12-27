@@ -13,6 +13,7 @@ module.exports = {
   coverageThreshold: { global: { statements: 10 } },
   ...(process.env.CI && {
     ci: true,
-    coverageReporters: ['lcovonly', 'github-actions'],
+    coverageReporters: ['lcovonly'],
+    reporters: [['github-actions', { silent: false }], 'summary'],
   }),
 };
