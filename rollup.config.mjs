@@ -2,6 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { defineConfig } from 'rollup';
+import copy from 'rollup-plugin-copy';
 
 export default defineConfig({
   input: 'src/index.ts',
@@ -12,6 +13,12 @@ export default defineConfig({
   plugins: [
     typescript({
       tsconfig: 'tsconfig.build.json',
+    }),
+    copy({
+      targets: [
+        { src: 'README.md', dest: 'dist' },
+        { src: 'LICENSE', dest: 'dist' },
+      ],
     }),
     {
       name: 'modify-package-json',

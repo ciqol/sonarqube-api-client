@@ -88,7 +88,3 @@ For example:
 ```javascript
 sonar.request('GET', 'projects/search', { q: 'sonar' }, 'json');
 ```
-
-## Contributing
-
-Check out our [`CONTRIBUTING.md`](CONTRIBUTING.md) page!
