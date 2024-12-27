@@ -3,24 +3,22 @@ name: '🏗️ CI/CD'
 
 on:
   pull_request:
-    branches: ['main']
+    branches: ['main', 'beta']
   push:
-    branches: ['main']
+    branches: ['main', 'beta']
+
 permissions:
-  contents: 'read'
+  contents: 'write' # for semantic release
 
 jobs:
-  quality:
+  cicd:
     runs-on: ['ubuntu-latest']
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix: { node-version: ['22.x', '20.x', '18.x'] }
     concurrency:
       group: 'ci-${{ github.workflow }}-${{ github.ref }}-${{ matrix.node-version }}'
       cancel-in-progress: false
     permissions:
-      contents: 'read'
+      contents: 'write' # for semantic release
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
@@ -49,26 +47,8 @@ jobs:
       - name: 'Build'
         run: npm run build
 
-  release:
-    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'beta')
-    runs-on: ['ubuntu-latest']
-    timeout-minutes: 10
-    needs: ['quality']
-    concurrency:
-      group: 'release-${{ github.workflow }}-${{ github.ref }}'
-      cancel-in-progress: false
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v4
-
-      - name: 'Setup Node.js'
-        uses: actions/setup-node@v4
-        with: { node-version-file: '.nvmrc' }
-
-      - name: 'Install'
-        run: HUSKY=0 npm ci --no-fund --no-audit
-
       - name: 'Release'
+        if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'beta')
         run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
