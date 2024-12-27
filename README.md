@@ -80,7 +80,7 @@ For more details on the API endpoints, visit the [SonarQube Web API documentatio
 > This library is not maintained by SonarQube and is not an official SonarQube client.
 >
 > The current available functions are based on a few use cases.
-> To support the rest, please open a PR or issues.
+> To support the rest, please open a new PR or issue.
 
 To interact with an API that not implemented yet, you can use the `request()` method to make a custom request to the SonarQube API.
 For example:
@@ -91,7 +91,4 @@ sonar.request('GET', 'projects/search', { q: 'sonar' }, 'json');
 
 ## Contributing
 
-If you’d like to contribute to the project, feel free to fork the repository and submit a pull request. Here are a few things you can do:
-• Report bugs
-• Add new features
-• Improve documentation
+Check out our [`CONTRIBUTING.md`](CONTRIBUTING.md) page!
