@@ -15,7 +15,7 @@ jobs:
     runs-on: ['ubuntu-latest']
     timeout-minutes: 10
     concurrency:
-      group: 'ci-${{ github.workflow }}-${{ github.ref }}-${{ matrix.node-version }}'
+      group: 'cicd-${{ github.workflow }}-${{ github.ref }}'
       cancel-in-progress: false
     permissions:
       contents: 'write' # for semantic release
@@ -27,7 +27,7 @@ jobs:
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v4
-        with: { node-version: '${{ matrix.node-version }}' }
+        with: { node-version-file: '.nvmrc' }
 
       - name: 'Install'
         run: HUSKY=0 npm ci --no-fund --no-audit
