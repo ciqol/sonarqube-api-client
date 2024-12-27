@@ -1,0 +1,75 @@
+---
+name: '🏗️ CI/CD'
+
+on:
+  pull_request:
+    branches: ['main']
+  push:
+    branches: ['main']
+permissions:
+  contents: 'read'
+
+jobs:
+  quality:
+    runs-on: ['ubuntu-latest']
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix: { node-version: ['22.x', '20.x', '18.x'] }
+    concurrency:
+      group: 'ci-${{ github.workflow }}-${{ github.ref }}-${{ matrix.node-version }}'
+      cancel-in-progress: false
+    permissions:
+      contents: 'read'
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v4
+        with: { node-version: '${{ matrix.node-version }}' }
+
+      - name: 'Install'
+        run: HUSKY=0 npm ci --no-fund --no-audit
+
+      - name: 'Test'
+        run: npm run test
+
+      - name: 'Audit'
+        run: npm audit
+
+      - name: 'Lint'
+        run: npm run lint:check
+
+      - name: 'Format'
+        run: npm run format:check
+
+      - name: 'Build'
+        run: npm run build
+
+  release:
+    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'beta')
+    runs-on: ['ubuntu-latest']
+    timeout-minutes: 10
+    needs: ['quality']
+    concurrency:
+      group: 'release-${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: false
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v4
+        with: { node-version-file: '.nvmrc' }
+
+      - name: 'Install'
+        run: HUSKY=0 npm ci --no-fund --no-audit
+
+      - name: 'Release'
+        run: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
