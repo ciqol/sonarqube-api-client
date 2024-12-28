@@ -65,6 +65,7 @@ class SonarQubeClient implements SonarClient {
       update_visibility: (params) => this.request('POST', 'projects/update_visibility', params),
     },
     qualitygates: {
+      rename: (params) => this.request('POST', 'qualitygates/rename', params),
       select: (params) => this.request('POST', 'qualitygates/select', params),
     },
     qualityprofiles: {
