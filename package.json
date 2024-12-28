@@ -57,11 +57,11 @@
     "client"
   ],
   "bugs": {
-    "url": "https://github.com/titan-ron/sonarqube-api-client/issues"
+    "url": "https://github.com/ciqol/sonarqube-api-client/issues"
   },
-  "homepage": "https://github.com/titan-ron/sonarqube-api-client#readme",
+  "homepage": "https://github.com/ciqol/sonarqube-api-client#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/titan-ron/sonarqube-api-client.git"
+    "url": "https://github.com/ciqol/sonarqube-api-client.git"
   }
 }

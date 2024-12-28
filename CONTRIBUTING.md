@@ -12,7 +12,7 @@ The following guidelines will help you get started quickly and ensure that your 
 ### Setup
 
 ```shell
-git clone https://github.com/titan-ron/sonarqube-api-client.git
+git clone https://github.com/ciqol/sonarqube-api-client.git
 cd sonarqube-api-client
 nvm use || nvm i
 npm ci
