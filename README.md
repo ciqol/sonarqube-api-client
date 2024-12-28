@@ -7,7 +7,7 @@
 [![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/ciqol/sonarqube-api-client)](https://snyk.io/test/github/ciqol/sonarqube-api-client)
 
 A JavaScript/TypeScript client for interacting with the SonarQube Web API.
-This package provides an easy-to-use interface for making requests to various SonarQube API endpoints, such as managing projects, quality gates, and other SonarQube features.
+This package provides an easy-to-use interface for requesting various SonarQube API endpoints, such as managing projects, quality gates, and other SonarQube features.
 
 ## Features
 
@@ -48,13 +48,13 @@ const sonar = createClient({
 });
 
 // Example API usage
-const projects = await sonar.api.projects.search({ query: 'my-project' });
+const projects = await sonar.api.projects.search({ q: 'my-project' });
 console.log(projects);
 ```
 
 ### API Limit
 
-To limit the number of API requests, you can use the `wrap` option to wrap around the API requests.
+We can use the `wrap` option to wrap around API requests to limit their number.
 
 For example, using [`p-limit`](https://www.npmjs.com/package/p-limit) to limit the number of concurrent requests:
 
@@ -85,10 +85,10 @@ For more details on the API endpoints, visit the [SonarQube Web API documentatio
 > This library is simply a client for interacting with the SonarQube API. It does not provide any functionality for running SonarQube itself.
 > This library is not maintained by SonarQube and is not an official SonarQube client.
 >
-> The current available functions are based on a few use cases.
+> The currently available functions are based on a few use cases.
 > To support the rest, please open a new PR or issue.
 
-To interact with an API that not implemented yet, you can use the `request()` method to make a custom request to the SonarQube API.
+To interact with an API that has not been implemented yet, you can use the `request()` method to make a custom request to the SonarQube API.
 For example:
 
 ```javascript
