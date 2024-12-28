@@ -4,7 +4,6 @@
 [![🎉 Release](https://github.com/ciqol/sonarqube-api-client/actions/workflows/release.yml/badge.svg)](https://github.com/ciqol/sonarqube-api-client/actions/workflows/release.yml)
 [![NPM Version](https://img.shields.io/npm/v/sonarqube-api-client)](https://www.npmjs.com/package/sonarqube-api-client)
 [![NPM Downloads](https://img.shields.io/npm/dm/sonarqube-api-client)](https://www.npmjs.com/package/sonarqube-api-client)
-[![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/ciqol/sonarqube-api-client)](https://snyk.io/test/github/ciqol/sonarqube-api-client)
 
 A JavaScript/TypeScript client for interacting with the SonarQube Web API.
 This package provides an easy-to-use interface for requesting various SonarQube API endpoints, such as managing projects, quality gates, and other SonarQube features.
