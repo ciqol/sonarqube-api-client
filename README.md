@@ -88,3 +88,55 @@ For example:
 ```javascript
 sonar.request('GET', 'projects/search', { q: 'sonar' }, 'json');
 ```
+
+### NestJS Example
+
+**sonar-client.provider.ts**
+
+```typescript
+import { ConfigService, type FactoryProvider } from '@nestjs/config';
+import { createClient } from 'sonarqube-api-client';
+
+export const SONAR_CLIENT_TOKEN = 'SONAR_CLIENT_TOKEN';
+
+export const SonarClientProvider: FactoryProvider = {
+  provide: SONAR_CLIENT_TOKEN,
+  inject: [ConfigService],
+  useFactory: (conf: ConfigService) => {
+    const token = conf.getOrThrow('SONAR_API_TOKEN');
+    const baseURL = conf.get('SONAR_API_BASE_URL', 'https://sonarqube.example.com');
+    const concurrency = conf.get('SONAR_API_CONCURRENCY', 3);
+
+    return createClient({ token, baseURL, wrap: pLimit(concurrency) });
+  },
+};
+```
+
+**sonar-client.module.ts**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { SonarClientProvider } from './sonar-client.provider';
+
+@Module({
+  imports: [ConfigModule],
+  providers: [SonarClientProvider],
+  exports: [SonarClientProvider],
+})
+export class SonarClientModule {}
+```
+
+**your.controller.ts** (or any other injectable)
+
+```typescript
+@Controller()
+export class YourController {
+  constructor(@Inject(SONAR_CLIENT_TOKEN) private readonly sonar: SonarClient) {}
+
+  @Get()
+  async getProjects() {
+    return this.sonar.api.projects.search({ q: 'sonar' });
+  }
+}
+```

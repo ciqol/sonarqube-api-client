@@ -1,4 +1,5 @@
 .idea/
+.rollup.cache/
 .vscode/
 coverage/
 dist/
@@ -10,8 +11,3 @@ tmp/
 .env*
 .eslintcache
 Thumbs.db
-
-
-
-.nx/cache
-.nx/workspace-data

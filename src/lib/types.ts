@@ -13,19 +13,43 @@ export interface SonarQubeWebApi {
    * @see https://next.sonarqube.com/sonarqube/web_api/api/alm_settings
    */
   readonly alm_settings: {
-    /** @see https://next.sonarqube.com/sonarqube/web_api/api/alm_settings?query=set_github_binding */
+    /**
+     * Bind a GitHub instance to a project.
+     *
+     * If the project was already bound to a previous GitHub instance, the binding will be updated to the new one.
+     *
+     * Requires the 'Administer' permission on the project.
+     * @since 8.1
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/alm_settings?query=set_github_binding
+     */
     set_github_binding(params: {
+      /** GitHub setting key. */
       readonly almSetting: string;
-      readonly project: string;
-      readonly repository: string;
+
+      /**
+       * Is this project part of a monorepo.
+       * @since 8.7
+       */
       readonly monorepo: boolean;
+
+      /** Project key. */
+      readonly project: string;
+
+      /** GitHub Repository. Maximum length is 256 characters. */
+      readonly repository: string;
+
+      /**
+       * Enable/disable summary in PR discussion tab.
+       * @default true
+       */
       readonly summaryCommentEnabled?: boolean;
     }): Promise<void>;
 
     /**
      * Get DevOps Platform binding of a given project.
+     *
+     * Requires the 'Browse' permission on the project.
      * @since 8.1
-     * @description Requires the 'Browse' permission on the project.
      * @see https://next.sonarqube.com/sonarqube/web_api/api/alm_settings?query=get_binding
      * @param {string} project - The key of the project to fetch the binding for.
      * @example
@@ -39,7 +63,7 @@ export interface SonarQubeWebApi {
      *   "monorepo": false
      * }
      */
-    get_binding({ project }: { readonly project: string }): Promise<{
+    get_binding({ project }: { /** Project key. */ readonly project: string }): Promise<{
       readonly key: string;
       readonly alm: ALM;
       readonly repository: string;
@@ -52,7 +76,7 @@ export interface SonarQubeWebApi {
      * List DevOps Platform setting available for a given project, sorted by DevOps Platform key.
      *
      * Requires the 'Administer project' permission if the 'project' parameter is provided, requires the 'Create Projects' permission otherwise.
-     *
+     * @since 8.1
      * @see https://next.sonarqube.com/sonarqube/web_api/api/alm_settings?query=list
      * @example
      * {
@@ -66,7 +90,7 @@ export interface SonarQubeWebApi {
      * }
      */
     list(params: {
-      /** Project key */
+      /** Project key. */
       readonly project: string;
     }): Promise<{ readonly almSettings: { readonly key: string; readonly alm: ALM; readonly url: string }[] }>;
   };
@@ -441,8 +465,9 @@ export interface SonarQubeWebApi {
 
     /**
      * Update a project all its sub-components keys.
+     *
+     * Requires 'Administer' permission on the project.
      * @since 6.1
-     * @description Requires 'Administer' permission on the project.
      * @see https://next.sonarqube.com/sonarqube/web_api/api/projects?query=update_key
      */
     update_key(params: {
@@ -461,8 +486,9 @@ export interface SonarQubeWebApi {
 
     /**
      * Updates visibility of a project, application or a portfolio.
+     *
+     * Requires 'Project administer' permission on the specified entity
      * @since 6.4
-     * @description Requires 'Project administer' permission on the specified entity
      * @see https://next.sonarqube.com/sonarqube/web_api/api/projects?query=update_visibility
      */
     update_visibility(params: {
@@ -637,6 +663,7 @@ export interface SonarClient {
   request<T extends string>(method: 'GET', apiPath: T, queryParams: object, type: 'json'): Promise<Awaited<ReturnType<PathToObject<T>>>>;
 }
 
+/** Represents a SonarQube Web API response error. */
 export type SonarError = Error & {
   /** The error message. */
   readonly message: string;
