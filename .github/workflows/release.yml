@@ -1,10 +1,10 @@
 ---
-name: '🏗️ CI/CD'
+name: '🎉 Release'
 
 on:
-  pull_request:
-    branches: ['main', 'beta']
-  push:
+  workflow_run:
+    workflows: ['🏗️ CI']
+    types: ['completed']
     branches: ['main', 'beta']
 
 permissions:
@@ -14,12 +14,14 @@ permissions:
   id-token: 'write' # to enable use of OIDC for npm provenance
 
 jobs:
-  cicd:
+  release:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ['ubuntu-latest']
+    environment: 'release'
     timeout-minutes: 10
     concurrency:
-      group: 'cicd-${{ github.workflow }}-${{ github.ref }}'
-      cancel-in-progress: false
+      group: 'release-${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: true
     permissions:
       contents: 'write' # to be able to publish a GitHub release
       issues: 'write' # to be able to comment on released issues
@@ -28,8 +30,6 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v4
@@ -54,7 +54,7 @@ jobs:
         run: npm run build
 
       - name: 'Release'
-        if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'beta')
+        if: github.ref_name == 'main' || github.ref_name == 'beta'
         run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

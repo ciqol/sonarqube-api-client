@@ -667,10 +667,13 @@ export interface SonarClient {
 export type SonarError = Error & {
   /** The error message. */
   readonly message: string;
+
   /** The HTTP status code. */
   readonly status: number;
+
   /** The error message. */
   readonly error: string;
+
   /** Error messages from SonarQube. */
   readonly errors: { readonly msg: string }[];
 };
