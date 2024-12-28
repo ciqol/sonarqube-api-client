@@ -544,6 +544,29 @@ export interface SonarQubeWebApi {
    */
   readonly qualitygates: {
     /**
+     * Rename a Quality Gate.
+     *
+     * `currentName` must be specified.
+     *
+     * Requires the 'Administer Quality Gates' permission.
+     * @since 4.3
+     */
+    rename(params: {
+      /**
+       * Current name of the quality gate. Maximum length is 100 characters.
+       * @since 8.4
+       * @example 'My Quality Gate'
+       */
+      readonly currentName: string;
+
+      /**
+       * New name of the quality gate. Maximum length is 100 characters.
+       * @example 'My New Quality Gate'
+       */
+      readonly name: string;
+    }): Promise<void>;
+
+    /**
      * Associate a project to a quality gate.
      *
      * Requires one of the following permissions:
