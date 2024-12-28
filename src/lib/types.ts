@@ -550,6 +550,7 @@ export interface SonarQubeWebApi {
      *
      * Requires the 'Administer Quality Gates' permission.
      * @since 4.3
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/qualitygates?query=rename
      */
     rename(params: {
       /**
