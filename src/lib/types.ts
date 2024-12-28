@@ -96,6 +96,43 @@ export interface SonarQubeWebApi {
   };
 
   /**
+   * Get the list of programming languages supported in this instance.
+   * @see https://next.sonarqube.com/sonarqube/web_api/api/languages
+   */
+  readonly languages: {
+    /**
+     * List supported programming languages.
+     * @since 5.1
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/languages?query=list
+     * @example
+     * // Example response:
+     * {
+     *   "languages": [
+     *     { "key": "c", "name": "C" },
+     *     { "key": "cpp", "name": "C++" },
+     *     { "key": "java", "name": "Java" },
+     *     { "key": "js", "name": "JavaScript" },
+     *     { "key": "python", "name": "Python" }
+     *   ]
+     * }
+     */
+    list(params?: {
+      /**
+       * The size of the list to return, 0 for all languages.
+       * @default 0
+       * @example 25
+       */
+      readonly ps?: number;
+
+      /**
+       * A pattern to match language keys/names against.
+       * @example 'java'
+       */
+      readonly q?: string;
+    }): Promise<{ readonly languages: { readonly key: string; readonly name: string }[] }>;
+  };
+
+  /**
    * Generate badges based on quality gates or measures.
    * @see https://next.sonarqube.com/sonarqube/web_api/api/project_badges
    */
@@ -114,9 +151,7 @@ export interface SonarQubeWebApi {
        */
       readonly branch?: string;
 
-      /**
-       * Metric key.
-       */
+      /** Metric key. */
       readonly metric:
         | 'coverage'
         | 'duplicated_lines_density'

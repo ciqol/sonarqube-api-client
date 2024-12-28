@@ -43,6 +43,9 @@ class SonarQubeClient implements SonarClient {
       list: (params) => this.request('GET', 'alm_settings/list', params, 'json'),
       set_github_binding: (params) => this.request('POST', 'alm_settings/set_github_binding', params),
     },
+    languages: {
+      list: (params) => this.request('GET', 'languages/list', params ?? {}, 'json'),
+    },
     project_badges: {
       measure: (params) => this.request('GET', 'project_badges/measure', params, 'text'),
       quality_gate: (params) => this.request('GET', 'project_badges/quality_gate', params, 'text'),
