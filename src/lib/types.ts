@@ -464,7 +464,7 @@ export interface SonarQubeWebApi {
        * @default 1
        * @example 42
        */
-      readonly p?: boolean | 'yes' | 'no';
+      readonly p?: number;
 
       /**
        * Comma-separated list of project keys. Maximum allowed values are 1000.
