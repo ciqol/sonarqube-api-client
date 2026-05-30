@@ -62,10 +62,11 @@ jobs:
         if: github.event_name == 'pull_request'
         # Preview the next version and notes for this PR. Unsetting
         # GITHUB_ACTIONS makes semantic-release evaluate the checked-out
-        # branch instead of refusing to run on a pull request, and the
-        # plugins are narrowed to analysis/notes so it never needs publish
-        # credentials.
-        run: env -u GITHUB_ACTIONS npx semantic-release --dry-run --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+        # branch instead of skipping pull requests; pointing it at the local
+        # repository satisfies its push-permission check without granting the
+        # job write access; and the plugins are narrowed to analysis/notes so
+        # it never needs publish credentials.
+        run: env -u GITHUB_ACTIONS npx semantic-release --dry-run --repository-url "${{ github.workspace }}/.git" --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
