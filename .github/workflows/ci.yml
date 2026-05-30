@@ -38,7 +38,20 @@ jobs:
           if-no-files-found: 'error'
 
       - name: 'Audit'
-        run: npm audit signatures
+        # Registry attestation lookups occasionally 404 transiently, so retry
+        # with backoff before treating it as a real signature failure.
+        run: |
+          for attempt in 1 2 3; do
+            if npm audit signatures; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "::warning::npm audit signatures failed (attempt ${attempt}/3), retrying in $((attempt * 10))s..."
+              sleep $((attempt * 10))
+            fi
+          done
+          echo "::error::npm audit signatures failed after 3 attempts"
+          exit 1
 
       - name: 'Lint'
         run: npm run lint:check
