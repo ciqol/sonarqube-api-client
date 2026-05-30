@@ -62,6 +62,6 @@
   "homepage": "https://github.com/ciqol/sonarqube-api-client#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ciqol/sonarqube-api-client.git"
+    "url": "git+https://github.com/ciqol/sonarqube-api-client.git"
   }
 }
