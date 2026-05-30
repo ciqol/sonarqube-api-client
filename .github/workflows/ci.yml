@@ -127,7 +127,7 @@ jobs:
           node smoke.cjs
 
   release:
-    needs: 'ci'
+    needs: ['ci', 'smoke']
     runs-on: 'ubuntu-latest'
     # Only enter the protected release environment for real releases; pull
     # request dry runs run without it (its branch policy blocks PR refs).
