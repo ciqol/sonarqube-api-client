@@ -11,6 +11,9 @@ updates:
     commit-message:
       prefix: 'fix'
       prefix-development: 'chore(deps)'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       npm-minor-and-patch:
         applies-to: 'version-updates'
@@ -25,6 +28,9 @@ updates:
     labels: ['dependencies']
     commit-message:
       prefix: 'ci(deps)'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       github-actions:
         applies-to: 'version-updates'

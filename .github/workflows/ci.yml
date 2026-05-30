@@ -21,12 +21,12 @@ jobs:
       contents: 'read'
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
 
       - name: 'Setup Node.js'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.4.0
         with: { node-version-file: '.nvmrc' }
 
       - name: 'Install'
@@ -36,7 +36,7 @@ jobs:
         run: npm run test
 
       - name: 'Upload coverage'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: 'coverage'
           path: 'coverage/cobertura-coverage.xml'
