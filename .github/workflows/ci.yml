@@ -115,7 +115,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['18', '20', '22', '24']
+        node: ['lts/hydrogen', 'lts/iron', 'lts/jod', 'lts/krypton']
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v6.0.2
