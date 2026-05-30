@@ -23,8 +23,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v6.0.2
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
-          fetch-depth: 0 # full history and tags for the release preview
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v6.4.0
@@ -58,18 +57,6 @@ jobs:
       - name: 'Build'
         run: npm run build
 
-      - name: 'Preview release'
-        if: github.event_name == 'pull_request'
-        # Preview the next version and notes for this PR. Unsetting
-        # GITHUB_ACTIONS makes semantic-release evaluate the checked-out
-        # branch instead of skipping pull requests; pointing it at the local
-        # repository satisfies its push-permission check without granting the
-        # job write access; and the plugins are narrowed to analysis/notes so
-        # it never needs publish credentials.
-        run: env -u GITHUB_ACTIONS npx semantic-release --dry-run --repository-url "${{ github.workspace }}/.git" --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   upload-coverage:
     name: 'Upload coverage'
     needs: ['ci']
@@ -95,10 +82,11 @@ jobs:
 
   release:
     name: 'Release'
-    if: github.event_name == 'push'
     needs: ['ci']
     runs-on: ['ubuntu-latest']
-    environment: 'release'
+    # Only enter the protected release environment for real releases; pull
+    # request dry runs run without it (its branch policy blocks PR refs).
+    environment: ${{ github.event_name == 'push' && 'release' || '' }}
     timeout-minutes: 10
     concurrency:
       group: 'release-${{ github.workflow }}-${{ github.ref }}'
@@ -112,6 +100,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v6.0.2
         with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
           fetch-depth: 0 # semantic-release needs full history and tags
 
       - name: 'Setup Node.js'
@@ -124,10 +113,24 @@ jobs:
         run: HUSKY=0 npm ci --no-fund --no-audit
 
       - name: 'Build'
+        if: github.event_name == 'push'
         run: npm run build
 
       - name: 'Release'
-        run: npm run release
+        # On pull requests, preview the next release without publishing; on
+        # pushes to a release branch, publish for real. The preview unsets
+        # GITHUB_ACTIONS so semantic-release evaluates the PR branch, points
+        # its push check at the local repository (so it needs no write
+        # access), and narrows the plugins so it needs no publish credentials.
+        run: |
+          if [ '${{ github.event_name }}' = 'pull_request' ]; then
+            env -u GITHUB_ACTIONS npx semantic-release --dry-run \
+              --repository-url "${{ github.workspace }}/.git" \
+              --branches "${{ github.head_ref }}" \
+              --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+          else
+            npm run release
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
