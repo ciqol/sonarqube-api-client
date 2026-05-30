@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createClient } from '../dist/index.esm.js';
+import { createClient } from 'sonarqube-api-client';
 
 const baseURL = process.env.SONAR_BASE_URL ?? 'http://localhost:9000';
 
