@@ -62,6 +62,41 @@ describe('createClient()', () => {
     expect(result).toBe(mockResponseText);
   });
 
+  it('should fetch the system health as JSON', async () => {
+    const mockResponse = { health: 'GREEN', causes: [] };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.system.health();
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/system/health?`, expect.any(Object));
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should ping the server returning plain text', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, text: jest.fn().mockResolvedValueOnce('pong') });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.system.ping();
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/system/ping?`, {
+      method: 'GET',
+      headers: { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` },
+    });
+    expect(result).toBe('pong');
+  });
+
+  it('should fetch the system status as JSON', async () => {
+    const mockResponse = { id: 'AU-Tpxb--iU5OvuD2FLy', version: '6.3.0.1234', status: 'UP' };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.system.status();
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/system/status?`, expect.any(Object));
+    expect(result).toEqual(mockResponse);
+  });
+
   it('should remove trailing slashes from baseURL', () => {
     mockFetch.mockResolvedValueOnce({ ok: true });
 

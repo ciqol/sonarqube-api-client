@@ -74,5 +74,10 @@ class SonarQubeClient implements SonarClient {
     server: {
       version: () => this.request('GET', 'server/version', {}, 'text'),
     },
+    system: {
+      health: () => this.request('GET', 'system/health', {}, 'json'),
+      ping: () => this.request('GET', 'system/ping', {}, 'text'),
+      status: () => this.request('GET', 'system/status', {}, 'json'),
+    },
   };
 }
