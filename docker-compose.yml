@@ -1,0 +1,15 @@
+services:
+  sonarqube:
+    image: 'sonarqube:lts-community'
+    container_name: 'sonarqube'
+    ports:
+      - '9000:9000'
+    environment:
+      # Disable the Elasticsearch bootstrap checks so SonarQube boots with its
+      # embedded H2 database in constrained local/CI environments. H2 is for
+      # evaluation and testing only — never run SonarQube on H2 in production.
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: 'true'
+      # Allow anonymous access so the e2e test can reach the API without
+      # provisioning a token. For this throwaway test instance only.
+      SONAR_FORCEAUTHENTICATION: 'false'
+    stop_grace_period: '1m'
