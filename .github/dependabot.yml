@@ -7,17 +7,14 @@ updates:
       interval: 'weekly'
       day: 'monday'
     open-pull-requests-limit: 10
-    labels:
-      - 'dependencies'
+    labels: ['dependencies']
     commit-message:
       prefix: 'fix'
       prefix-development: 'chore(deps-dev)'
     groups:
       npm-minor-and-patch:
         applies-to: 'version-updates'
-        update-types:
-          - 'minor'
-          - 'patch'
+        update-types: ['minor', 'patch']
 
   - package-ecosystem: 'github-actions'
     directory: '/'
@@ -25,14 +22,10 @@ updates:
       interval: 'weekly'
       day: 'monday'
     open-pull-requests-limit: 10
-    labels:
-      - 'dependencies'
-      - 'github-actions'
+    labels: ['dependencies']
     commit-message:
       prefix: 'ci(deps)'
     groups:
       github-actions:
         applies-to: 'version-updates'
-        update-types:
-          - 'minor'
-          - 'patch'
+        update-types: ['minor', 'patch']
