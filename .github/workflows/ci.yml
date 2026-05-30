@@ -2,44 +2,36 @@
 name: '🏗️ CI'
 
 on:
+  workflow_dispatch:
   pull_request:
-    branches: ['main', 'beta']
   push:
     branches: ['main', 'beta']
 
-permissions:
-  contents: 'read'
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   ci:
-    runs-on: ['ubuntu-latest']
+    runs-on: 'ubuntu-latest'
     timeout-minutes: 10
-    concurrency:
-      group: 'ci-${{ github.workflow }}-${{ github.ref }}'
-      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-    permissions:
-      contents: 'read'
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+        with: { ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v6.4.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+        with: { node-version-file: '.nvmrc', cache: 'npm' }
 
       - name: 'Install'
-        run: HUSKY=0 npm ci --no-fund --no-audit
+        run: npm ci --no-fund --no-audit
 
       - name: 'Test'
         run: npm run test
 
       - name: 'Upload coverage report'
         uses: actions/upload-artifact@v7.0.1
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           name: 'cobertura-report'
           path: 'coverage/cobertura-coverage.xml'
@@ -54,14 +46,9 @@ jobs:
       - name: 'Format'
         run: npm run format:check
 
-      - name: 'Build'
-        run: npm run build
-
   upload-coverage:
-    name: 'Upload coverage'
-    needs: ['ci']
-    if: ${{ !cancelled() && needs.ci.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-    runs-on: ['ubuntu-latest']
+    needs: 'ci'
+    runs-on: 'ubuntu-latest'
     timeout-minutes: 10
     permissions:
       contents: 'read'
@@ -70,8 +57,7 @@ jobs:
     steps:
       - name: 'Download coverage report'
         uses: actions/download-artifact@v8.0.1
-        with:
-          name: 'cobertura-report'
+        with: { name: 'cobertura-report' }
 
       - name: 'Upload to code coverage API'
         uses: actions/upload-code-coverage@v1.3.0
@@ -81,16 +67,12 @@ jobs:
           label: 'code-coverage/jest'
 
   release:
-    name: 'Release'
-    needs: ['ci']
-    runs-on: ['ubuntu-latest']
+    needs: 'ci'
+    runs-on: 'ubuntu-latest'
     # Only enter the protected release environment for real releases; pull
     # request dry runs run without it (its branch policy blocks PR refs).
     environment: ${{ github.event_name == 'push' && 'release' || '' }}
     timeout-minutes: 10
-    concurrency:
-      group: 'release-${{ github.workflow }}-${{ github.ref }}'
-      cancel-in-progress: true
     permissions:
       contents: 'write' # to be able to publish a GitHub release
       issues: 'write' # to be able to comment on released issues
@@ -99,38 +81,20 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
-          fetch-depth: 0 # semantic-release needs full history and tags
+        with: { fetch-depth: '0', ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v6.4.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+        with: { node-version-file: '.nvmrc', cache: 'npm' }
 
       - name: 'Install'
-        run: HUSKY=0 npm ci --no-fund --no-audit
+        run: npm ci --no-fund --no-audit
 
       - name: 'Build'
-        if: github.event_name == 'push'
         run: npm run build
 
-      - name: 'Release'
-        # On pull requests, preview the next release without publishing; on
-        # pushes to a release branch, publish for real. The preview unsets
-        # GITHUB_ACTIONS so semantic-release evaluates the PR branch, points
-        # its push check at the local repository (so it needs no write
-        # access), and narrows the plugins so it needs no publish credentials.
-        run: |
-          if [ '${{ github.event_name }}' = 'pull_request' ]; then
-            env -u GITHUB_ACTIONS npx semantic-release --dry-run \
-              --repository-url "${{ github.workspace }}/.git" \
-              --branches "${{ github.head_ref }}" \
-              --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
-          else
-            npm run release
-          fi
+      - name: '🎉 Release'
+        run: npm run release ${{ github.event_name == 'pull_request' && '-- --dry-run' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
