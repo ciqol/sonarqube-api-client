@@ -106,11 +106,13 @@ jobs:
       - name: 'Preview release'
         # Override plugins so the preview only analyzes commits and renders
         # notes, decoupling it from npm/GitHub publishing and their tokens.
-        # --no-ci bypasses semantic-release's "skip on pull request" guard so
-        # the preview actually evaluates the PR's commits.
-        run: npx semantic-release --dry-run --no-ci --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+        # Present the PR head as a normal push so semantic-release evaluates
+        # the branch's commits instead of skipping the pull request.
+        run: npx semantic-release --dry-run --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_NAME: 'push'
+          GITHUB_REF: 'refs/heads/${{ github.head_ref }}'
 
   release:
     name: 'Release'
