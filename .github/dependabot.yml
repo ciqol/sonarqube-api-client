@@ -6,11 +6,11 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
     labels: ['dependencies']
     commit-message:
       prefix: 'fix'
-      prefix-development: 'chore(deps-dev)'
+      prefix-development: 'chore(deps)'
     groups:
       npm-minor-and-patch:
         applies-to: 'version-updates'
@@ -21,7 +21,7 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
     labels: ['dependencies']
     commit-message:
       prefix: 'ci(deps)'
