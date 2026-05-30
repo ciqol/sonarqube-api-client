@@ -73,7 +73,7 @@ const sonar = createClient({
 | --------- | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `baseURL` |    ✓     | The base URL for the SonarQube instance. This should be the root URL without any trailing slashes. Example: `'https://sonarqube.example.com'`                                                  |
 | `token`   |    ✓     | The authentication token for your SonarQube instance.                                                                                                                                          |
-| `wrap`    |    ✖    | A function that wraps around the API requests. Can be used to limit the API requests or add custom logic around it. If not provided, the default behavior is simply to invoke the API request. |
+| `wrap`    |    ✖     | A function that wraps around the API requests. Can be used to limit the API requests or add custom logic around it. If not provided, the default behavior is simply to invoke the API request. |
 
 ### API Methods
 
