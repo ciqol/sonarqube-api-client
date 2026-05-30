@@ -9,11 +9,11 @@ module.exports = {
   clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: ['**/*.(t|j)s', '**/*.mjs', '!**/index.ts'],
-  coverageReporters: ['lcov'],
+  coverageReporters: ['lcov', 'cobertura'],
   coverageThreshold: { global: { statements: 10 } },
   ...(process.env.CI && {
     ci: true,
-    coverageReporters: ['lcovonly'],
+    coverageReporters: ['lcovonly', 'cobertura'],
     reporters: [['github-actions', { silent: false }], 'summary'],
   }),
 };
