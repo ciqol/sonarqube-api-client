@@ -94,7 +94,7 @@ jobs:
         run: npm run build
 
       - name: '🎉 Release'
-        run: npm run release ${{ github.event_name == 'pull_request' && '-- --dry-run' || '' }}
+        run: npm run release ${{ github.event_name != 'push' && '-- --dry-run' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
