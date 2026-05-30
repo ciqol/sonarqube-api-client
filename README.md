@@ -17,6 +17,7 @@ This package provides an easy-to-use interface for requesting various SonarQube 
   - ALM Settings
   - Project Branches
   - Project Badges
+  - System
   - More…
 
 ## Installation

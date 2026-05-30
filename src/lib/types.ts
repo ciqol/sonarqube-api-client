@@ -676,6 +676,84 @@ export interface SonarQubeWebApi {
      */
     version(): Promise<string>;
   };
+
+  /** @see https://next.sonarqube.com/sonarqube/web_api/api/system */
+  readonly system: {
+    /**
+     * Provide health status of SonarQube.
+     *
+     * - `GREEN`: SonarQube is fully operational
+     * - `YELLOW`: SonarQube is usable, but it needs attention in order to be fully operational
+     * - `RED`: SonarQube is not operational
+     *
+     * Requires the 'Administer System' permission or system passcode (see sonar.web.systemPasscode in sonar.properties).
+     * When SonarQube is in safe mode (waiting or running a database upgrade), only the authentication with a system passcode is supported.
+     * @since 6.6
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/system?query=health
+     */
+    health(): Promise<{
+      /** Health status of the SonarQube instance. */
+      readonly health: 'GREEN' | 'YELLOW' | 'RED';
+
+      /** Reasons explaining a non-`GREEN` health status. */
+      readonly causes: readonly { readonly message: string }[];
+
+      /** Health information per node, present only on a cluster deployment. */
+      readonly nodes?: readonly {
+        readonly name: string;
+        readonly type: 'APPLICATION' | 'SEARCH';
+        readonly host: string;
+        readonly port: number;
+        readonly startedAt: string;
+        readonly health: 'GREEN' | 'YELLOW' | 'RED';
+        readonly causes: readonly { readonly message: string }[];
+      }[];
+    }>;
+
+    /**
+     * Answers "pong" as plain text.
+     *
+     * Requires no permission and works without authentication.
+     * @since 6.3
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/system?query=ping
+     * @example 'pong'
+     */
+    ping(): Promise<string>;
+
+    /**
+     * Get state information about SonarQube.
+     *
+     * - `status`: the running status
+     *   - `STARTING`: SonarQube Web Server is up and serving some Web Services
+     *     (e.g. `api/system/status`) but initialization is still ongoing.
+     *   - `UP`: SonarQube instance is up and running.
+     *   - `DOWN`: SonarQube instance is up but not running because migration has
+     *     failed (refer to WS `/api/system/migrate_db` for details) or some other
+     *     reason (check logs).
+     *   - `RESTARTING`: SonarQube instance is still up but a restart has been
+     *     requested (refer to WS `/api/system/restart` for details).
+     *   - `DB_MIGRATION_NEEDED`: database migration is required.
+     *   - `DB_MIGRATION_RUNNING`: DB migration is running (refer to WS
+     *     `/api/system/migrate_db` for details).
+     *
+     * Requires no permission and works without authentication.
+     * @since 5.2
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/system?query=status
+     */
+    status(): Promise<{
+      /** Unique identifier of the SonarQube instance. */
+      readonly id: string;
+
+      /**
+       * Version of SonarQube.
+       * @example '6.3.0.1234'
+       */
+      readonly version: string;
+
+      /** Running status of the SonarQube instance. */
+      readonly status: 'STARTING' | 'UP' | 'DOWN' | 'RESTARTING' | 'DB_MIGRATION_NEEDED' | 'DB_MIGRATION_RUNNING';
+    }>;
+  };
 }
 
 export type WrapRequestFunction = <ReturnType>(func: () => PromiseLike<ReturnType> | ReturnType) => PromiseLike<ReturnType>;
