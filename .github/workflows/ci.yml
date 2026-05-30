@@ -35,6 +35,13 @@ jobs:
       - name: 'Test'
         run: npm run test
 
+      - name: 'Upload coverage'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'coverage'
+          path: 'coverage/cobertura-coverage.xml'
+          if-no-files-found: 'error'
+
       - name: 'Audit'
         run: npm audit signatures
 
