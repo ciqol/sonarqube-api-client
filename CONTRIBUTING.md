@@ -48,6 +48,27 @@ Run the project’s unit tests (with coverage):
 npm test
 ```
 
+### End-to-End (E2E)
+
+The E2E test exercises the client against a real SonarQube instance. A `docker-compose.yml` is provided to spin one up locally:
+
+```shell
+# Elasticsearch requires a higher mmap limit (Linux hosts)
+sudo sysctl -w vm.max_map_count=262144
+
+# Start SonarQube (http://localhost:9000) and wait until it reports status UP
+docker compose up --detach
+
+# Build the client (the E2E test imports the built output) and run it
+npm run build
+node test/e2e.mjs
+
+# Tear it down
+docker compose down --volumes
+```
+
+The `e2e` workflow runs this automatically on every pull request and on pushes to `main`.
+
 ## Need Help?
 
 If you encounter any issues or need clarification, feel free to open an issue or reach out to the maintainers.
