@@ -27,7 +27,9 @@ jobs:
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v6.4.0
-        with: { node-version-file: '.nvmrc' }
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: 'Install'
         run: HUSKY=0 npm ci --no-fund --no-audit
@@ -77,3 +79,73 @@ jobs:
           file: 'cobertura-coverage.xml'
           language: 'TypeScript'
           label: 'code-coverage/jest'
+
+  release-dry-run:
+    name: 'Release (dry run)'
+    if: github.event_name == 'pull_request'
+    runs-on: ['ubuntu-latest']
+    timeout-minutes: 10
+    permissions:
+      contents: 'read'
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0 # semantic-release needs full history and tags
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Install'
+        run: HUSKY=0 npm ci --no-fund --no-audit
+
+      - name: 'Preview release'
+        # Override plugins so the preview only analyzes commits and renders
+        # notes, decoupling it from npm/GitHub publishing and their tokens.
+        run: npx semantic-release --dry-run --branches "${{ github.head_ref }}" --plugins @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: 'Release'
+    if: github.event_name == 'push'
+    needs: ['ci']
+    runs-on: ['ubuntu-latest']
+    environment: 'release'
+    timeout-minutes: 10
+    concurrency:
+      group: 'release-${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: true
+    permissions:
+      contents: 'write' # to be able to publish a GitHub release
+      issues: 'write' # to be able to comment on released issues
+      pull-requests: 'write' # to be able to comment on released pull requests
+      id-token: 'write' # to enable use of OIDC for npm provenance
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0 # semantic-release needs full history and tags
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Install'
+        run: HUSKY=0 npm ci --no-fund --no-audit
+
+      - name: 'Build'
+        run: npm run build
+
+      - name: 'Release'
+        run: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true' # attach npm provenance via OIDC
