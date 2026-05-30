@@ -188,7 +188,7 @@ jobs:
         run: docker compose down --volumes
 
   release:
-    needs: ['ci', 'smoke']
+    needs: ['ci', 'smoke', 'e2e']
     runs-on: 'ubuntu-latest'
     # Only enter the protected release environment for real releases; pull
     # request dry runs run without it (its branch policy blocks PR refs).
