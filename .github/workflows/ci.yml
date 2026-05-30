@@ -135,7 +135,7 @@ jobs:
       - name: 'Smoke test (ESM + CJS)'
         run: |
           work="$(mktemp -d)"
-          cp smoke/smoke.mjs smoke/smoke.cjs "$work"/
+          cp test/smoke.mjs test/smoke.cjs "$work"/
           cd "$work"
           npm init -y >/dev/null
           npm install "$GITHUB_WORKSPACE"/pkg/*.tgz --no-fund --no-audit
