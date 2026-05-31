@@ -97,7 +97,8 @@ typing silently.
 - For non-dev-dependency changes, use the `fix` type/prefix.
 - Husky runs `commit-msg` (commitlint) and `pre-commit` (lint-staged) hooks.
 - Versioning/publishing is automated by **semantic-release** from commit messages —
-  do **not** bump `version` in `package.json` manually.
+  do **not** bump `version` in `package.json` manually. Publishing uses npm **OIDC
+  trusted publishing** (no `NPM_TOKEN`) with signed provenance.
 - Work on a topic branch and open a focused PR; keep changes small and reviewable.
 
 ## CI expectations
@@ -110,7 +111,8 @@ typing silently.
   `test/smoke.{mjs,cjs}`.
 - `e2e`: boots SonarQube via `docker-compose.yml` and runs `test/e2e.mjs` against
   the packed tarball.
-- `release`: runs only on push to `main`, gated on `ci`, `smoke`, and `e2e`.
+- `release`: runs only on push to `main`, gated on `ci`, `smoke`, and `e2e`. Publishes
+  to npm via OIDC trusted publishing (token-free) with provenance.
 
 A change is not "done" until CI would pass. Validate locally with the commands in
 the Setup section before pushing.

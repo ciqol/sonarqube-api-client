@@ -72,6 +72,14 @@ cd "$OLDPWD" && docker compose down --volumes
 
 The `e2e` job in the CI workflow runs this automatically (against the uploaded package tarball) on every pull request and on pushes to `main`.
 
+### Releases
+
+Releases are fully automated by [semantic-release](https://semantic-release.gitbook.io/) — **do not** bump the `version` in `package.json` manually.
+
+- On every push to `main`, the `release` job (gated on `ci`, `smoke`, and `e2e`) analyzes the [Conventional Commits](https://www.conventionalcommits.org/) since the last release to decide the next version (`fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE` → major).
+- It then publishes the package (from `dist/`) to npm and creates the matching GitHub release.
+- Publishing uses **npm [trusted publishing](https://docs.npmjs.com/trusted-publishers) via GitHub Actions OIDC** — there is no `NPM_TOKEN`. The workflow's `id-token: write` permission lets npm exchange a short-lived OIDC token, and each release is published with signed [provenance](https://docs.npmjs.com/generating-provenance-statements). The trusted publisher is configured on the npm package settings (repo + `ci.yml` workflow).
+
 ## Need Help?
 
 If you encounter any issues or need clarification, feel free to open an issue or reach out to the maintainers.
