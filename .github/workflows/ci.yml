@@ -19,7 +19,7 @@ jobs:
       contents: 'read' # to check out the repository
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
         with: { ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
@@ -106,7 +106,7 @@ jobs:
         node: ['lts/hydrogen', 'lts/iron', 'lts/jod', 'lts/krypton']
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
         with: { ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
@@ -138,7 +138,7 @@ jobs:
       contents: 'read' # to check out the repository
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
         with: { ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
@@ -207,7 +207,7 @@ jobs:
       id-token: 'write' # OIDC: npm trusted publishing (token-free auth) + provenance
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
         with: { fetch-depth: '0', ref: '${{ github.event.pull_request.head.sha }}' }
 
       - name: 'Setup Node.js'
