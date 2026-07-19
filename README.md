@@ -10,7 +10,7 @@ This package provides an easy-to-use interface for requesting various SonarQube 
 ## Features
 
 - **Simple Client Creation**: Easily create a client instance to interact with the SonarQube API.
-- **Supports ES Modules and CommonJS**: Load the client using either ES Modules or CommonJS.
+- **Supports ES Modules and CommonJS**: Load the client using either ES Modules or CommonJS. See [Build & Publishing](docs/build-and-publishing.md) for how the dual-format package is built and released.
 - **Built-in API Methods**: Includes methods for interacting with the following SonarQube endpoints:
   - Projects
   - Quality Gates
