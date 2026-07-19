@@ -1,6 +1,6 @@
 type ALM =
   | // br
-  'azure'
+    'azure'
   | 'bitbucket'
   | 'bitbucketcloud'
   | 'github'
