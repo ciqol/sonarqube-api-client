@@ -80,6 +80,8 @@ Releases are fully automated by [semantic-release](https://semantic-release.gitb
 - It then publishes the package (from `dist/`) to npm and creates the matching GitHub release.
 - Publishing uses **npm [trusted publishing](https://docs.npmjs.com/trusted-publishers) via GitHub Actions OIDC** — there is no `NPM_TOKEN`. The workflow's `id-token: write` permission lets npm exchange a short-lived OIDC token, and each release is published with signed [provenance](https://docs.npmjs.com/generating-provenance-statements). The trusted publisher is configured on the npm package settings (repo + `ci.yml` workflow).
 
+For a deeper explanation of the build pipeline, the generated `dist/` manifest, and why the root `package.json` is `private: true`, see [Build & Publishing](docs/build-and-publishing.md).
+
 ## Need Help?
 
 If you encounter any issues or need clarification, feel free to open an issue or reach out to the maintainers.
