@@ -1,4 +1,4 @@
-# Sonar API Client
+# SonarQube API Client
 
 [![🏗️ CI](https://github.com/ciqol/sonarqube-api-client/actions/workflows/ci.yml/badge.svg)](https://github.com/ciqol/sonarqube-api-client/actions/workflows/ci.yml)
 [![NPM Version](https://img.shields.io/npm/v/sonarqube-api-client)](https://www.npmjs.com/package/sonarqube-api-client)
