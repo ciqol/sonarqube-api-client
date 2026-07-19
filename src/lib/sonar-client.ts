@@ -1,11 +1,11 @@
 import { createError } from './sonar.error';
-import type { CreateClientOptions, PathToObject, SonarClient, SonarQubeWebApi, WrapRequestFunction } from './types';
+import type { CreateClientOptions, FetchFunction, PathToObject, SonarClient, SonarQubeWebApi, WrapRequestFunction } from './types';
 
-export function createClient({ baseURL, token, wrap }: CreateClientOptions): SonarClient {
+export function createClient({ baseURL, token, wrap, fetch: fetchImpl }: CreateClientOptions): SonarClient {
   const sonarAPI = baseURL.replace(/\/$/, '');
   const headers: RequestInit['headers'] = token ? { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` } : {};
 
-  return new SonarQubeClient(sonarAPI, headers, wrap ?? (async (invoke) => invoke()));
+  return new SonarQubeClient(sonarAPI, headers, wrap ?? (async (invoke) => invoke()), fetchImpl ?? ((...args) => globalThis.fetch(...args)));
 }
 
 class SonarQubeClient implements SonarClient {
@@ -13,6 +13,7 @@ class SonarQubeClient implements SonarClient {
     private readonly baseURL: string,
     private readonly headers: RequestInit['headers'],
     private readonly wrap: WrapRequestFunction,
+    private readonly fetchFn: FetchFunction,
   ) {}
 
   async request(method: 'POST', apiPath: string, queryParams: object): Promise<void>;
@@ -24,7 +25,7 @@ class SonarQubeClient implements SonarClient {
     const { href: url } = new URL(`${api}?${searchParams}`);
     // todo: debug? debug(`${method} /${apiPath}?${searchParams}`);
     const invoke = () =>
-      fetch(url, { method, headers: this.headers }).then(async (res) => {
+      this.fetchFn(url, { method, headers: this.headers }).then(async (res) => {
         if (!res.ok) {
           throw await createError(res);
         }
