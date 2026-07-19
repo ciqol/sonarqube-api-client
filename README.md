@@ -25,13 +25,13 @@ This package provides an easy-to-use interface for requesting various SonarQube 
 ### NPM
 
 ```shell
-npm install sonar-api-client
+npm install sonarqube-api-client
 ```
 
 ### Yarn
 
 ```shell
-yarn add sonar-api-client
+yarn add sonarqube-api-client
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ yarn add sonar-api-client
 ### Create a SonarQube Client
 
 ```javascript
-import { createClient } from 'sonar-api-client';
+import { createClient } from 'sonarqube-api-client';
 
 const sonar = createClient({
   baseURL: 'https://sonarqube.example.com',
@@ -59,7 +59,7 @@ For example, using [`p-limit`](https://www.npmjs.com/package/p-limit) to limit t
 
 ```javascript
 import pLimit from 'p-limit';
-import { createClient } from 'sonar-api-client';
+import { createClient } from 'sonarqube-api-client';
 
 const sonar = createClient({
   baseURL: 'https://sonarqube.example.com',
@@ -100,6 +100,7 @@ sonar.request('GET', 'projects/search', { q: 'sonar' }, 'json');
 
 ```typescript
 import { ConfigService, type FactoryProvider } from '@nestjs/config';
+import pLimit from 'p-limit';
 import { createClient } from 'sonarqube-api-client';
 
 export const SONAR_CLIENT_TOKEN = 'SONAR_CLIENT_TOKEN';
