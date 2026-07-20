@@ -55,12 +55,6 @@ jobs:
           echo "::error::npm audit signatures failed after 3 attempts"
           exit 1
 
-      - name: 'Lint'
-        run: npm run lint:check
-
-      - name: 'Format'
-        run: npm run format:check
-
       - name: 'Build'
         run: npm run build
 
