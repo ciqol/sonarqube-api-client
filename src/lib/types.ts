@@ -140,7 +140,9 @@ export interface SonarQubeWebApi {
     /**
      * Return component with specified measures.
      *
-     * Requires the following permission: 'Browse' on the project of specified component.
+     * Requires one of the following permissions:
+     * - 'Browse' on the project of the specified component
+     * - 'Execute Analysis' on the project of the specified component
      * @since 5.4
      * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=component
      * @example
@@ -154,6 +156,7 @@ export interface SonarQubeWebApi {
      *     "path": "src/main/java/com/sonarsource/markdown/impl/ElementImpl.java",
      *     "measures": [
      *       { "metric": "complexity", "value": "12", "bestValue": false },
+     *       { "metric": "new_violations", "period": { "value": "25", "bestValue": false } },
      *       { "metric": "ncloc", "value": "114", "bestValue": false }
      *     ]
      *   },
@@ -204,7 +207,7 @@ export interface SonarQubeWebApi {
         readonly measures: {
           readonly metric: string;
           readonly value?: string;
-          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly period?: { readonly index?: number; readonly value: string; readonly bestValue?: boolean };
           readonly bestValue?: boolean;
         }[];
       };
@@ -227,6 +230,7 @@ export interface SonarQubeWebApi {
      * The baseComponentId or the component parameter must be provided.
      *
      * Requires the following permission: 'Browse' on the specified project.
+     * For applications, it also requires 'Browse' permission on its child projects.
      * When limiting search with the q parameter, directories are not returned.
      * @since 5.4
      * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=component_tree
@@ -366,7 +370,7 @@ export interface SonarQubeWebApi {
         readonly measures: {
           readonly metric: string;
           readonly value?: string;
-          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly period?: { readonly index?: number; readonly value: string; readonly bestValue?: boolean };
           readonly bestValue?: boolean;
         }[];
       };
@@ -379,7 +383,7 @@ export interface SonarQubeWebApi {
         readonly measures: {
           readonly metric: string;
           readonly value?: string;
-          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly period?: { readonly index?: number; readonly value: string; readonly bestValue?: boolean };
           readonly bestValue?: boolean;
         }[];
       }[];
@@ -403,6 +407,7 @@ export interface SonarQubeWebApi {
      * Pagination applies to the number of measures for each metric.
      *
      * Requires the following permission: 'Browse' on the specified component.
+     * For applications, it also requires 'Browse' permission on its child projects.
      * @since 6.3
      * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=search_history
      * @example
