@@ -51,6 +51,21 @@ describe('createClient()', () => {
     expect(result).toBeUndefined(); // `POST` request without `type` returns `undefined`
   });
 
+  it('should use the custom `fetch` implementation when provided', async () => {
+    const mockResponse = { projects: ['project1'] };
+    const customFetch = jest.fn().mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient({ baseURL, token, fetch: customFetch as unknown as typeof fetch });
+    const result = await client.api.projects.search({});
+
+    expect(customFetch).toHaveBeenCalledWith(`${baseURL}/api/projects/search?`, {
+      method: 'GET',
+      headers: { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` },
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual(mockResponse);
+  });
+
   it('should handle text response type correctly', async () => {
     const mockResponseText = 'badge-value';
     mockFetch.mockResolvedValueOnce({ ok: true, text: jest.fn().mockResolvedValueOnce(mockResponseText) });

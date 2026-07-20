@@ -758,6 +758,8 @@ export interface SonarQubeWebApi {
 
 export type WrapRequestFunction = <ReturnType>(func: () => PromiseLike<ReturnType> | ReturnType) => PromiseLike<ReturnType>;
 
+export type FetchFunction = typeof fetch;
+
 export type PathToObject<T extends string, Obj = SonarQubeWebApi> = T extends `${infer Head}/${infer Tail}`
   ? Head extends keyof Obj
     ? PathToObject<Tail, Obj[Head]>
@@ -833,4 +835,11 @@ export interface CreateClientOptions {
    * If not provided, the default behavior is simply to invoke the API request.
    */
   readonly wrap?: WrapRequestFunction;
+
+  /**
+   * A custom `fetch` implementation to use for all requests.
+   * Useful for proxies, custom agents, retries, or non-global-fetch runtimes.
+   * @default globalThis.fetch
+   */
+  readonly fetch?: FetchFunction;
 }
