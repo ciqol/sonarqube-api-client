@@ -112,6 +112,66 @@ describe('createClient()', () => {
     expect(result).toEqual(mockResponse);
   });
 
+  it('should fetch component measures as JSON', async () => {
+    const mockResponse = {
+      component: { key: 'my_project', name: 'My Project', qualifier: 'TRK', measures: [{ metric: 'ncloc', value: '114', bestValue: false }] },
+      metrics: [{ key: 'ncloc', name: 'Lines of Code', type: 'INT' }],
+    };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.measures.component({ component: 'my_project', metricKeys: 'ncloc,complexity' });
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/measures/component?component=my_project&metricKeys=ncloc%2Ccomplexity`, {
+      method: 'GET',
+      headers: { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` },
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should fetch a component tree with measures as JSON', async () => {
+    const mockResponse = {
+      paging: { pageIndex: 1, pageSize: 100, total: 1 },
+      baseComponent: { key: 'my_project', name: 'My Project', qualifier: 'TRK', measures: [] },
+      components: [{ key: 'my_project:Foo.java', name: 'Foo.java', qualifier: 'FIL', measures: [{ metric: 'ncloc', value: '120' }] }],
+    };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.measures.component_tree({ component: 'my_project', metricKeys: 'ncloc', strategy: 'leaves', ps: 20 });
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/measures/component_tree?component=my_project&metricKeys=ncloc&strategy=leaves&ps=20`, {
+      method: 'GET',
+      headers: { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` },
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should fetch measures history as JSON', async () => {
+    const mockResponse = {
+      paging: { pageIndex: 1, pageSize: 100, total: 2 },
+      measures: [
+        {
+          metric: 'ncloc',
+          history: [
+            { date: '2017-01-01T00:00:00+0200', value: '100' },
+            { date: '2017-02-01T00:00:00+0200', value: '110' },
+          ],
+        },
+      ],
+    };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValueOnce(mockResponse) });
+
+    const client = createClient(defaultOptions);
+    const result = await client.api.measures.search_history({ component: 'my_project', metrics: 'ncloc', from: '2017-01-01' });
+
+    expect(mockFetch).toHaveBeenCalledWith(`${baseURL}/api/measures/search_history?component=my_project&metrics=ncloc&from=2017-01-01`, {
+      method: 'GET',
+      headers: { Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}` },
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
   it('should remove trailing slashes from baseURL', () => {
     mockFetch.mockResolvedValueOnce({ ok: true });
 
