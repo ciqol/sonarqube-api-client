@@ -133,6 +133,359 @@ export interface SonarQubeWebApi {
   };
 
   /**
+   * Get components or children with specified measures.
+   * @see https://next.sonarqube.com/sonarqube/web_api/api/measures
+   */
+  readonly measures: {
+    /**
+     * Return component with specified measures.
+     *
+     * Requires the following permission: 'Browse' on the project of specified component.
+     * @since 5.4
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=component
+     * @example
+     * // Example response:
+     * {
+     *   "component": {
+     *     "key": "MY_PROJECT:ElementImpl.java",
+     *     "name": "ElementImpl.java",
+     *     "qualifier": "FIL",
+     *     "language": "java",
+     *     "path": "src/main/java/com/sonarsource/markdown/impl/ElementImpl.java",
+     *     "measures": [
+     *       { "metric": "complexity", "value": "12", "bestValue": false },
+     *       { "metric": "ncloc", "value": "114", "bestValue": false }
+     *     ]
+     *   },
+     *   "metrics": [
+     *     { "key": "complexity", "name": "Complexity", "type": "INT" }
+     *   ]
+     * }
+     */
+    component(params: {
+      /**
+       * Comma-separated list of additional fields that can be returned in the response.
+       * @example 'metrics,period'
+       */
+      readonly additionalFields?: string;
+
+      /**
+       * Branch key. Not available in the community edition.
+       * @since 6.6
+       * @example 'feature/my_branch'
+       */
+      readonly branch?: string;
+
+      /**
+       * Component key.
+       * @example 'my_project'
+       */
+      readonly component: string;
+
+      /**
+       * Comma-separated list of metric keys.
+       * @example 'ncloc,complexity,violations'
+       */
+      readonly metricKeys: string;
+
+      /**
+       * Pull request id. Not available in the community edition.
+       * @since 7.1
+       * @example '5461'
+       */
+      readonly pullRequest?: string;
+    }): Promise<{
+      readonly component: {
+        readonly key: string;
+        readonly name: string;
+        readonly qualifier: string;
+        readonly language?: string;
+        readonly path?: string;
+        readonly measures: {
+          readonly metric: string;
+          readonly value?: string;
+          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly bestValue?: boolean;
+        }[];
+      };
+      readonly metrics?: {
+        readonly key: string;
+        readonly name: string;
+        readonly type: string;
+        readonly description?: string;
+        readonly domain?: string;
+        readonly higherValuesAreBetter?: boolean;
+        readonly qualitative?: boolean;
+        readonly hidden?: boolean;
+        readonly custom?: boolean;
+      }[];
+      readonly period?: { readonly index: number; readonly mode: string; readonly date?: string; readonly parameter?: string };
+    }>;
+
+    /**
+     * Navigate through components based on the chosen strategy with specified measures.
+     * The baseComponentId or the component parameter must be provided.
+     *
+     * Requires the following permission: 'Browse' on the specified project.
+     * When limiting search with the q parameter, directories are not returned.
+     * @since 5.4
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=component_tree
+     * @example
+     * // Example response:
+     * {
+     *   "paging": { "pageIndex": 1, "pageSize": 100, "total": 3 },
+     *   "baseComponent": {
+     *     "key": "MY_PROJECT",
+     *     "name": "My Project",
+     *     "qualifier": "TRK",
+     *     "measures": [{ "metric": "ncloc", "value": "1000", "bestValue": false }]
+     *   },
+     *   "components": [
+     *     {
+     *       "key": "MY_PROJECT:src/main/java/com/Foo.java",
+     *       "name": "Foo.java",
+     *       "qualifier": "FIL",
+     *       "measures": [{ "metric": "ncloc", "value": "120", "bestValue": false }]
+     *     }
+     *   ],
+     *   "metrics": [{ "key": "ncloc", "name": "Lines of Code", "type": "INT" }]
+     * }
+     */
+    component_tree(params: {
+      /**
+       * Comma-separated list of additional fields that can be returned in the response.
+       * @example 'metrics,period'
+       */
+      readonly additionalFields?: string;
+
+      /**
+       * Ascending sort.
+       * @default true
+       */
+      readonly asc?: boolean;
+
+      /**
+       * Branch key. Not available in the community edition.
+       * @since 6.6
+       * @example 'feature/my_branch'
+       */
+      readonly branch?: string;
+
+      /**
+       * Component key. The search is based on this root component.
+       * @example 'my_project'
+       */
+      readonly component: string;
+
+      /**
+       * Comma-separated list of metric keys.
+       * @example 'ncloc,complexity,violations'
+       */
+      readonly metricKeys: string;
+
+      /**
+       * Sort measures by leak period or not. The 's' parameter must contain the 'metricPeriod' value.
+       * @example 1
+       */
+      readonly metricPeriodSort?: number;
+
+      /**
+       * Metric key to sort by. The 's' parameter must contain the 'metric' or 'metricPeriod' value.
+       * It must be part of the 'metricKeys' parameter.
+       * @example 'ncloc'
+       */
+      readonly metricSort?: string;
+
+      /**
+       * Filter components. Sort must be on a metric. Possible values are:
+       * - 'all': return all components
+       * - 'withMeasuresOnly': filter out components that do not have a measure on the sorted metric.
+       * @default 'all'
+       */
+      readonly metricSortFilter?: 'all' | 'withMeasuresOnly';
+
+      /**
+       * 1-based page number.
+       * @default 1
+       * @example 42
+       */
+      readonly p?: number;
+
+      /**
+       * Page size. Must be greater than 0 and less or equal than 500.
+       * @default 100
+       * @example 20
+       */
+      readonly ps?: number;
+
+      /**
+       * Pull request id. Not available in the community edition.
+       * @since 7.1
+       * @example '5461'
+       */
+      readonly pullRequest?: string;
+
+      /**
+       * Limit search to:
+       * - component names that contain the supplied string
+       * - component keys that are exactly the same as the supplied string
+       * @since 5.4
+       * @example 'FILE_NAM'
+       */
+      readonly q?: string;
+
+      /**
+       * Comma-separated list of component qualifiers. Filter the results with the specified qualifiers.
+       * @example 'FIL,DIR'
+       */
+      readonly qualifiers?: string;
+
+      /**
+       * Comma-separated list of sort fields.
+       * @default 'metric,name'
+       * @example 'name'
+       */
+      readonly s?: string;
+
+      /**
+       * Strategy to search for base component descendants:
+       * - 'children': return the children components of the base component. Grandchildren components are not returned
+       * - 'all': return all the descendants components of the base component. Grandchildren are returned
+       * - 'leaves': return all the descendant components (files, in general) which don't have other children. They are the leaves of the component tree.
+       * @default 'all'
+       */
+      readonly strategy?: 'all' | 'children' | 'leaves';
+    }): Promise<{
+      readonly paging: { readonly pageIndex: number; readonly pageSize: number; readonly total: number };
+      readonly baseComponent: {
+        readonly key: string;
+        readonly name: string;
+        readonly qualifier: string;
+        readonly language?: string;
+        readonly path?: string;
+        readonly measures: {
+          readonly metric: string;
+          readonly value?: string;
+          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly bestValue?: boolean;
+        }[];
+      };
+      readonly components: {
+        readonly key: string;
+        readonly name: string;
+        readonly qualifier: string;
+        readonly language?: string;
+        readonly path?: string;
+        readonly measures: {
+          readonly metric: string;
+          readonly value?: string;
+          readonly period?: { readonly index: number; readonly value: string; readonly bestValue?: boolean };
+          readonly bestValue?: boolean;
+        }[];
+      }[];
+      readonly metrics?: {
+        readonly key: string;
+        readonly name: string;
+        readonly type: string;
+        readonly description?: string;
+        readonly domain?: string;
+        readonly higherValuesAreBetter?: boolean;
+        readonly qualitative?: boolean;
+        readonly hidden?: boolean;
+        readonly custom?: boolean;
+      }[];
+      readonly period?: { readonly index: number; readonly mode: string; readonly date?: string; readonly parameter?: string };
+    }>;
+
+    /**
+     * Search measures history of a component.
+     * Measures are ordered chronologically.
+     * Pagination applies to the number of measures for each metric.
+     *
+     * Requires the following permission: 'Browse' on the specified component.
+     * @since 6.3
+     * @see https://next.sonarqube.com/sonarqube/web_api/api/measures?query=search_history
+     * @example
+     * // Example response:
+     * {
+     *   "paging": { "pageIndex": 1, "pageSize": 100, "total": 3 },
+     *   "measures": [
+     *     {
+     *       "metric": "ncloc",
+     *       "history": [
+     *         { "date": "2017-01-01T00:00:00+0200", "value": "100" },
+     *         { "date": "2017-02-01T00:00:00+0200", "value": "110" }
+     *       ]
+     *     }
+     *   ]
+     * }
+     */
+    search_history(params: {
+      /**
+       * Branch key. Not available in the community edition.
+       * @since 6.6
+       * @example 'feature/my_branch'
+       */
+      readonly branch?: string;
+
+      /**
+       * Component key.
+       * @example 'my_project'
+       */
+      readonly component: string;
+
+      /**
+       * Filter measures created after the given date (inclusive).
+       * Either a date (server timezone) or datetime can be provided.
+       * @example '2017-10-19'
+       * @example '2017-10-19T13:00:00+0200'
+       */
+      readonly from?: string;
+
+      /**
+       * Comma-separated list of metric keys.
+       * @example 'ncloc,coverage,new_violations'
+       */
+      readonly metrics: string;
+
+      /**
+       * 1-based page number.
+       * @default 1
+       * @example 42
+       */
+      readonly p?: number;
+
+      /**
+       * Page size. Must be greater than 0 and less or equal than 1000.
+       * @default 100
+       * @example 20
+       */
+      readonly ps?: number;
+
+      /**
+       * Pull request id. Not available in the community edition.
+       * @since 7.1
+       * @example '5461'
+       */
+      readonly pullRequest?: string;
+
+      /**
+       * Filter measures created before the given date (inclusive).
+       * Either a date (server timezone) or datetime can be provided.
+       * @example '2017-10-19'
+       * @example '2017-10-19T13:00:00+0200'
+       */
+      readonly to?: string;
+    }): Promise<{
+      readonly paging: { readonly pageIndex: number; readonly pageSize: number; readonly total: number };
+      readonly measures: {
+        readonly metric: string;
+        readonly history: { readonly date: string; readonly value?: string }[];
+      }[];
+    }>;
+  };
+
+  /**
    * Generate badges based on quality gates or measures.
    * @see https://next.sonarqube.com/sonarqube/web_api/api/project_badges
    */
