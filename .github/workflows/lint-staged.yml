@@ -37,7 +37,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = 'pull_request' ]; then
             base='${{ github.event.pull_request.base.ref }}'
-            git fetch --no-tags --depth=1 origin "$base"
+            git fetch --no-tags origin "+refs/heads/${base}:refs/remotes/origin/${base}"
             echo "value=origin/${base}...HEAD" >> "$GITHUB_OUTPUT"
           else
             before='${{ github.event.before }}'
