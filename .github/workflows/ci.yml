@@ -88,7 +88,7 @@ jobs:
         with: { name: 'cobertura-report' }
 
       - name: 'Upload to code coverage API'
-        uses: actions/upload-code-coverage@v1.4.1
+        uses: actions/upload-code-coverage@v1.4.2
         with:
           file: 'cobertura-coverage.xml'
           language: 'TypeScript'
